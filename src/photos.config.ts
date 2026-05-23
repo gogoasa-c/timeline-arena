@@ -28,6 +28,7 @@ export const photoConfig = {
     1990: 'photos/era-1990.jpg',
     2011: 'photos/era-2011.jpg',
     2024: 'photos/era-2024.jpg',
+    2026: 'photos/era-2024.jpg',
   } as Record<number, string>,
 
   // Map: hotspot-id → period-label → photo path

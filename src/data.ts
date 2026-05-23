@@ -55,11 +55,23 @@ export const YEARS: YearData[] = [
     eraName: 'National Arena',
     eraSubtitle: 'Arena Națională',
     description:
-      'Arena Națională continues to evolve as Romania\'s premier venue. Major concerts, international qualifiers, and a planned infrastructure expansion for the 2030s define the current chapter.',
+      'Romania returns to a major tournament after a decade\'s absence. The national team\'s run at UEFA Euro 2024 reignites public passion, and the stadium becomes the gathering point for a new generation of supporters.',
     keyMoments: [
-      'Coldplay — A Music of the Spheres Tour',
       'Romania qualifies for UEFA Euro 2024',
-      'Roof upgrade and expansion feasibility announced',
+      'Romania advances from the group stage at Euro 2024',
+      'Record viewing parties held outside the stadium',
+    ],
+  },
+  {
+    year: 2026,
+    eraName: 'National Arena',
+    eraSubtitle: 'Arena Națională',
+    description:
+      'Arena Națională enters its most active period yet. Coldplay\'s Music of the Spheres World Tour draws record crowds, while Romania\'s World Cup 2030 qualification campaign keeps the stadium in constant use. Infrastructure expansion plans move into the design phase.',
+    keyMoments: [
+      'Coldplay — Music of the Spheres World Tour',
+      'Romania vs Kosovo — World Cup 2030 qualifier',
+      'Roof expansion and capacity upgrade enters design phase',
     ],
   },
 ];
@@ -84,13 +96,13 @@ export const ERAS: Era[] = [
     label: '2011–now',
     range: '2011–now',
     description: 'The modern era. A rebuilt stadium, European finals, global acts, and a new generation of memories.',
-    years: [2011, 2013, 2016, 2019, 2021, 2024],
+    years: [2011, 2013, 2016, 2019, 2021, 2024, 2026],
   },
 ];
 
 export const TIMELINE_YEARS = [
   1953, 1960, 1968, 1975, 1980, 1985, 1990, 1994, 1998, 2000, 2004, 2007,
-  2011, 2013, 2016, 2019, 2021, 2024,
+  2011, 2013, 2016, 2019, 2021, 2024, 2026,
 ];
 
 export const HOTSPOTS: HotspotSection[] = [
@@ -183,7 +195,7 @@ export const HOTSPOTS: HotspotSection[] = [
 const RAW_SUBMISSIONS: Submission[] = [
   {
     id: 'sub-1',
-    year: 2024,
+    year: 2026,
     title: 'Coldplay — Music of the Spheres',
     memory:
       'The light show interacted with the roof structure in a way no football match could ever replicate. We were part of the universe that night.',
@@ -194,7 +206,7 @@ const RAW_SUBMISSIONS: Submission[] = [
   },
   {
     id: 'sub-2',
-    year: 2024,
+    year: 2026,
     title: 'Romania vs Kosovo qualifier',
     memory:
       '8,000 fans in a 55,000-seat stadium. The hollow echo was eerie but the ultras made it feel alive regardless.',
