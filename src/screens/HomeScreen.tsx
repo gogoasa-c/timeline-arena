@@ -1,6 +1,7 @@
 import { memo, useMemo } from 'react';
 import { StadiumRing } from '../components/StadiumRing';
 import { getYearData, getEraPhoto, TIMELINE_YEARS } from '../data';
+import { ShareButton } from '../components/ShareButton';
 import type { Screen } from '../types';
 
 interface HomeScreenProps {
@@ -113,6 +114,7 @@ export const HomeScreen = memo(function HomeScreen({
           <ActionButton onClick={() => onNavigate('archive')} icon="▦">
             Archive
           </ActionButton>
+          <ShareButton variant="action" />
         </div>
       </div>
 

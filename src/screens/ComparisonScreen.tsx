@@ -1,5 +1,7 @@
-import { memo, useState, useRef } from 'react';
+import { memo, useState, useRef, useEffect } from 'react';
 import { ERAS, getEraPhoto } from '../data';
+import { readParams, writeParams } from '../hooks/useUrlSync';
+import { ShareButton } from '../components/ShareButton';
 
 const ERA_YEARS = [
   { label: '1968', value: 1968 },
@@ -9,10 +11,15 @@ const ERA_YEARS = [
 ];
 
 export const ComparisonScreen = memo(function ComparisonScreen() {
-  const [leftYear, setLeftYear] = useState(1968);
-  const [rightYear, setRightYear] = useState(2024);
+  const initParams = readParams();
+  const [leftYear, setLeftYear] = useState(Number(initParams.get('left') ?? 1968));
+  const [rightYear, setRightYear] = useState(Number(initParams.get('right') ?? 2024));
   const [divider, setDivider] = useState(50);
   const splitRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    writeParams({ screen: 'comparison', left: String(leftYear), right: String(rightYear) });
+  }, [leftYear, rightYear]);
 
   const leftEra = ERAS.find((e) => e.years.includes(leftYear)) ?? ERAS[0];
   const rightEra = ERAS.find((e) => e.years.includes(rightYear)) ?? ERAS[2];
@@ -45,19 +52,26 @@ export const ComparisonScreen = memo(function ComparisonScreen() {
         padding: '20px 24px 16px',
         borderBottom: '1px solid var(--border)',
         flexShrink: 0,
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'space-between',
+        gap: '12px',
       }}>
-        <div style={{
-          fontSize: '10px',
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-          color: 'var(--text-muted)',
-          marginBottom: '4px',
-        }}>
-          Era Comparison
+        <div>
+          <div style={{
+            fontSize: '10px',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            color: 'var(--text-muted)',
+            marginBottom: '4px',
+          }}>
+            Era Comparison
+          </div>
+          <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '22px', fontWeight: 700 }}>
+            {leftYear} vs {rightYear}
+          </h2>
         </div>
-        <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '22px', fontWeight: 700 }}>
-          {leftYear} vs {rightYear}
-        </h2>
+        <ShareButton />
       </div>
 
       {/* Split view */}

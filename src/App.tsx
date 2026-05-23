@@ -1,6 +1,8 @@
-import { useState, useCallback, memo } from 'react';
+import { useState, useCallback, memo, useEffect } from 'react';
 import { useIsDesktop } from './hooks/useIsDesktop';
 import { useTweaks } from './hooks/useTweaks';
+import { readParams, writeParams } from './hooks/useUrlSync';
+import { TIMELINE_YEARS } from './data';
 import { Sidebar } from './components/Sidebar';
 import { BottomNav } from './components/BottomNav';
 import { StatusBar } from './components/StatusBar';
@@ -12,14 +14,42 @@ import { HotspotsScreen } from './screens/HotspotsScreen';
 import { UploadFlow } from './screens/UploadFlow';
 import type { Screen, Submission } from './types';
 
+const LINKABLE_SCREENS: Screen[] = ['home', 'yearDetail', 'comparison', 'archive', 'hotspots'];
+
+function parseInitialState(): { screen: Screen; year: number } {
+  const p = readParams();
+  const rawScreen = p.get('screen');
+  const screen: Screen =
+    rawScreen && LINKABLE_SCREENS.includes(rawScreen as Screen)
+      ? (rawScreen as Screen)
+      : 'home';
+  const rawYear = Number(p.get('year') ?? 2024);
+  const year = TIMELINE_YEARS.includes(rawYear)
+    ? rawYear
+    : TIMELINE_YEARS.reduce((a, b) =>
+        Math.abs(b - rawYear) < Math.abs(a - rawYear) ? b : a
+      );
+  return { screen, year };
+}
+
+const { screen: initScreen, year: initYear } = parseInitialState();
+
 export default function App() {
   const isDesktop = useIsDesktop();
   const { tweaks } = useTweaks();
 
-  const [screen, setScreen] = useState<Screen>('home');
-  const [year, setYear] = useState(2024);
+  const [screen, setScreen] = useState<Screen>(initScreen);
+  const [year, setYear] = useState(initYear);
   const [showUpload, setShowUpload] = useState(false);
   const [userSubmissions, setUserSubmissions] = useState<Submission[]>([]);
+
+  // Comparison and Hotspots own their URL params entirely — skip here.
+  useEffect(() => {
+    if (screen === 'comparison' || screen === 'hotspots') return;
+    const params: Record<string, string> = { year: String(year) };
+    if (screen !== 'home') params.screen = screen;
+    writeParams(params);
+  }, [screen, year]);
 
   const navigate = useCallback((s: Screen) => setScreen(s), []);
   const handleYearDetail = useCallback(() => setScreen('yearDetail'), []);

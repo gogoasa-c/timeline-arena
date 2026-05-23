@@ -1,5 +1,7 @@
-import { memo, useState, useCallback } from 'react';
+import { memo, useState, useCallback, useEffect } from 'react';
 import { HOTSPOTS, getHotspotPhoto } from '../data';
+import { readParams, writeParams } from '../hooks/useUrlSync';
+import { ShareButton } from '../components/ShareButton';
 import type { HotspotSection } from '../types';
 
 const ERA_FILTERS = ['1968', '1990', '2011', '2024'] as const;
@@ -17,9 +19,20 @@ export const HotspotsScreen = memo(function HotspotsScreen({
 }: {
   year: number;
 }) {
-  const [selected, setSelected] = useState<HotspotSection>(HOTSPOTS[0]);
-  const [eraFilter, setEraFilter] = useState<EraFilter>('2024');
-  const [selectedPeriod, setSelectedPeriod] = useState<string>(ERA_TO_PERIOD['2024']);
+  const initParams = readParams();
+  const initEra = (ERA_FILTERS.includes(initParams.get('era') as EraFilter)
+    ? initParams.get('era')
+    : '2024') as EraFilter;
+  const initHotspot =
+    HOTSPOTS.find((h) => h.id === initParams.get('hotspot')) ?? HOTSPOTS[0];
+
+  const [selected, setSelected] = useState<HotspotSection>(initHotspot);
+  const [eraFilter, setEraFilter] = useState<EraFilter>(initEra);
+  const [selectedPeriod, setSelectedPeriod] = useState<string>(ERA_TO_PERIOD[initEra]);
+
+  useEffect(() => {
+    writeParams({ screen: 'hotspots', hotspot: selected.id, era: eraFilter });
+  }, [selected.id, eraFilter]);
 
   const handleEraFilter = useCallback((f: EraFilter) => {
     setEraFilter(f);
@@ -64,7 +77,7 @@ export const HotspotsScreen = memo(function HotspotsScreen({
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '6px' }}>
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
           {ERA_FILTERS.map((f) => (
             <button
               key={f}
@@ -83,6 +96,8 @@ export const HotspotsScreen = memo(function HotspotsScreen({
               {f}
             </button>
           ))}
+          <div style={{ width: '1px', height: '16px', background: 'var(--border)', margin: '0 2px' }} />
+          <ShareButton />
         </div>
       </div>
 

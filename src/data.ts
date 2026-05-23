@@ -228,7 +228,7 @@ const RAW_SUBMISSIONS: Submission[] = [
   {
     id: 'sub-5',
     year: 2013,
-    title: 'Europa League Final — Chelsea v Benfica',
+    title: 'Europa League Final',
     memory:
       'The first major European final here. The stadium proved it could hold its own on the biggest stage.',
     type: 'Event',

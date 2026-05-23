@@ -1,6 +1,7 @@
 import { memo, useMemo } from 'react';
 import { StadiumRing } from '../components/StadiumRing';
 import { getYearData, getSubmissionsForYear, getEraPhoto } from '../data';
+import { ShareButton } from '../components/ShareButton';
 import type { Screen, Submission } from '../types';
 
 interface YearDetailProps {
@@ -96,27 +97,29 @@ export const YearDetailScreen = memo(function YearDetailScreen({
         flexDirection: 'column',
         gap: '24px',
       }}>
-        {/* Back button */}
-        <button
-          onClick={onBack}
-          style={{
-            alignSelf: 'flex-start',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            fontSize: '12px',
-            color: 'var(--text-muted)',
-            border: '1px solid var(--border)',
-            padding: '6px 12px',
-            borderRadius: 'var(--radius-md)',
-            background: 'transparent',
-            transition: 'border-color 0.15s',
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--border-strong)')}
-          onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
-        >
-          ← Back
-        </button>
+        {/* Back button + Share */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <button
+            onClick={onBack}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '12px',
+              color: 'var(--text-muted)',
+              border: '1px solid var(--border)',
+              padding: '6px 12px',
+              borderRadius: 'var(--radius-md)',
+              background: 'transparent',
+              transition: 'border-color 0.15s',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--border-strong)')}
+            onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
+          >
+            ← Back
+          </button>
+          <ShareButton />
+        </div>
 
         {/* Historical Summary */}
         <section>

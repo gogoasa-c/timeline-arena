@@ -1,6 +1,8 @@
-import { memo, useState, useMemo } from 'react';
+import { memo, useState, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { SUBMISSIONS, ALL_MEMORY_TYPES } from '../data';
+import { readParams } from '../hooks/useUrlSync';
+import { ShareButton } from '../components/ShareButton';
 import type { Submission, MemoryType } from '../types';
 
 type FilterType = typeof ALL_MEMORY_TYPES[number];
@@ -11,7 +13,24 @@ export const ArchiveScreen = memo(function ArchiveScreen({
   extraSubmissions?: Submission[];
 }) {
   const [filter, setFilter] = useState<FilterType>('All');
-  const [selectedPost, setSelectedPost] = useState<Submission | null>(null);
+  const [selectedPost, setSelectedPost] = useState<Submission | null>(() => {
+    const id = readParams().get('post');
+    return id ? (SUBMISSIONS.find((s) => s.id === id) ?? null) : null;
+  });
+
+  const handleSelectPost = useCallback((s: Submission) => {
+    setSelectedPost(s);
+    const sp = new URLSearchParams(window.location.search);
+    sp.set('post', s.id);
+    history.replaceState(null, '', '?' + sp.toString());
+  }, []);
+
+  const handleClosePost = useCallback(() => {
+    setSelectedPost(null);
+    const sp = new URLSearchParams(window.location.search);
+    sp.delete('post');
+    history.replaceState(null, '', '?' + sp.toString());
+  }, []);
 
   const allSubmissions = useMemo(
     () => [...extraSubmissions, ...SUBMISSIONS],
@@ -109,13 +128,13 @@ export const ArchiveScreen = memo(function ArchiveScreen({
           </div>
         ) : (
           byYear.map(([yr, subs]) => (
-            <YearGroup key={yr} year={yr} submissions={subs} onSelect={setSelectedPost} />
+            <YearGroup key={yr} year={yr} submissions={subs} onSelect={handleSelectPost} />
           ))
         )}
       </div>
 
       {selectedPost && (
-        <PostDetailModal submission={selectedPost} onClose={() => setSelectedPost(null)} />
+        <PostDetailModal submission={selectedPost} onClose={handleClosePost} />
       )}
     </div>
   );
@@ -386,7 +405,10 @@ function PostDetailModal({ submission: s, onClose }: { submission: Submission; o
               </div>
               <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{s.author}</span>
             </div>
-            <span style={{ fontSize: '12px', color: 'var(--text-dim)' }}>♥ {s.likes}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ fontSize: '12px', color: 'var(--text-dim)' }}>♥ {s.likes}</span>
+              <ShareButton />
+            </div>
           </div>
         </div>
       </div>
