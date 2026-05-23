@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react';
 import { StadiumRing } from '../components/StadiumRing';
-import { getYearData, TIMELINE_YEARS } from '../data';
+import { getYearData, getEraPhoto, TIMELINE_YEARS } from '../data';
 import type { Screen } from '../types';
 
 interface HomeScreenProps {
@@ -17,6 +17,7 @@ export const HomeScreen = memo(function HomeScreen({
   onYearDetail,
 }: HomeScreenProps) {
   const data = useMemo(() => getYearData(year), [year]);
+  const eraPhoto = useMemo(() => getEraPhoto(year), [year]);
 
   const minYear = TIMELINE_YEARS[0];
   const maxYear = TIMELINE_YEARS[TIMELINE_YEARS.length - 1];
@@ -34,9 +35,28 @@ export const HomeScreen = memo(function HomeScreen({
         overflow: 'hidden',
       }}
     >
-      {/* Background rings */}
+      {/* Background */}
       <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-        <StadiumRing opacity={0.18} />
+        {eraPhoto ? (
+          <img
+            key={eraPhoto}
+            src={eraPhoto}
+            alt=""
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'center',
+            }}
+          />
+        ) : (
+          <StadiumRing opacity={0.18} />
+        )}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(to top, rgba(10,9,8,0.97) 0%, rgba(10,9,8,0.75) 45%, rgba(10,9,8,0.4) 100%)',
+        }} />
       </div>
 
       {/* Content */}

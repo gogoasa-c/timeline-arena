@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react';
 import { StadiumRing } from '../components/StadiumRing';
-import { getYearData, getSubmissionsForYear } from '../data';
+import { getYearData, getSubmissionsForYear, getEraPhoto } from '../data';
 import type { Screen, Submission } from '../types';
 
 interface YearDetailProps {
@@ -17,6 +17,7 @@ export const YearDetailScreen = memo(function YearDetailScreen({
   extraSubmissions = [],
 }: YearDetailProps) {
   const data = useMemo(() => getYearData(year), [year]);
+  const eraPhoto = useMemo(() => getEraPhoto(year), [year]);
   const submissions = useMemo(
     () => [
       ...extraSubmissions.filter((s) => s.year === year),
@@ -42,7 +43,29 @@ export const YearDetailScreen = memo(function YearDetailScreen({
         borderRight: '1px solid var(--border)',
         overflow: 'hidden',
       }}>
-        <StadiumRing opacity={0.25} />
+        {eraPhoto ? (
+          <img
+            key={eraPhoto}
+            src={eraPhoto}
+            alt={`Arena Națională ${year}`}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'center',
+            }}
+          />
+        ) : (
+          <StadiumRing opacity={0.25} />
+        )}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(to top, rgba(10,9,8,0.92) 0%, rgba(10,9,8,0.4) 55%, rgba(10,9,8,0.15) 100%)',
+          pointerEvents: 'none',
+        }} />
         <div style={{
           position: 'absolute',
           bottom: '20px',
