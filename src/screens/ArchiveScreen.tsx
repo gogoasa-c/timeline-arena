@@ -13,6 +13,17 @@ export const ArchiveScreen = memo(function ArchiveScreen({
   extraSubmissions?: Submission[];
 }) {
   const [filter, setFilter] = useState<FilterType>('All');
+  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+
+  const handleToggleLike = useCallback((id: string) => {
+    setLikedIds((prev) => {
+      const next = new Set(prev);
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }, []);
+
   const [selectedPost, setSelectedPost] = useState<Submission | null>(() => {
     const id = readParams().get('post');
     return id ? (SUBMISSIONS.find((s) => s.id === id) ?? null) : null;
@@ -128,19 +139,24 @@ export const ArchiveScreen = memo(function ArchiveScreen({
           </div>
         ) : (
           byYear.map(([yr, subs]) => (
-            <YearGroup key={yr} year={yr} submissions={subs} onSelect={handleSelectPost} />
+            <YearGroup key={yr} year={yr} submissions={subs} likedIds={likedIds} onSelect={handleSelectPost} />
           ))
         )}
       </div>
 
       {selectedPost && (
-        <PostDetailModal submission={selectedPost} onClose={handleClosePost} />
+        <PostDetailModal
+          submission={selectedPost}
+          liked={likedIds.has(selectedPost.id)}
+          onToggleLike={() => handleToggleLike(selectedPost.id)}
+          onClose={handleClosePost}
+        />
       )}
     </div>
   );
 });
 
-function YearGroup({ year, submissions, onSelect }: { year: number; submissions: Submission[]; onSelect: (s: Submission) => void }) {
+function YearGroup({ year, submissions, likedIds, onSelect }: { year: number; submissions: Submission[]; likedIds: Set<string>; onSelect: (s: Submission) => void }) {
   return (
     <section style={{ marginTop: '32px' }}>
       <div style={{
@@ -166,14 +182,14 @@ function YearGroup({ year, submissions, onSelect }: { year: number; submissions:
         gap: '12px',
       }}>
         {submissions.map((sub) => (
-          <MemoryCard key={sub.id} submission={sub} onSelect={onSelect} />
+          <MemoryCard key={sub.id} submission={sub} liked={likedIds.has(sub.id)} onSelect={onSelect} />
         ))}
       </div>
     </section>
   );
 }
 
-function MemoryCard({ submission: s, onSelect }: { submission: Submission; onSelect: (s: Submission) => void }) {
+function MemoryCard({ submission: s, liked, onSelect }: { submission: Submission; liked: boolean; onSelect: (s: Submission) => void }) {
   return (
     <div
       onClick={() => onSelect(s)}
@@ -260,14 +276,16 @@ function MemoryCard({ submission: s, onSelect }: { submission: Submission; onSel
             </div>
             <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{s.author}</span>
           </div>
-          <span style={{ fontSize: '12px', color: 'var(--text-dim)' }}>♥ {s.likes}</span>
+          <span style={{ fontSize: '12px', color: liked ? 'var(--accent)' : 'var(--text-dim)' }}>
+            ♥ {s.likes + (liked ? 1 : 0)}
+          </span>
         </div>
       </div>
     </div>
   );
 }
 
-function PostDetailModal({ submission: s, onClose }: { submission: Submission; onClose: () => void }) {
+function PostDetailModal({ submission: s, liked, onToggleLike, onClose }: { submission: Submission; liked: boolean; onToggleLike: () => void; onClose: () => void }) {
   return createPortal(
     <div
       style={{
@@ -405,8 +423,38 @@ function PostDetailModal({ submission: s, onClose }: { submission: Submission; o
               </div>
               <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{s.author}</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <span style={{ fontSize: '12px', color: 'var(--text-dim)' }}>♥ {s.likes}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <button
+                onClick={onToggleLike}
+                title={liked ? 'Unlike' : 'Like this memory'}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  fontSize: '12px',
+                  padding: '5px 11px',
+                  borderRadius: 'var(--radius-md)',
+                  border: `1px solid ${liked ? 'var(--accent)' : 'var(--border)'}`,
+                  background: liked ? 'var(--accent-dim)' : 'transparent',
+                  color: liked ? 'var(--accent)' : 'var(--text-dim)',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+                onMouseEnter={(e) => {
+                  if (!liked) {
+                    e.currentTarget.style.borderColor = 'var(--accent-border)';
+                    e.currentTarget.style.color = 'var(--accent)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!liked) {
+                    e.currentTarget.style.borderColor = 'var(--border)';
+                    e.currentTarget.style.color = 'var(--text-dim)';
+                  }
+                }}
+              >
+                {liked ? '♥' : '♡'} {s.likes + (liked ? 1 : 0)}
+              </button>
               <ShareButton />
             </div>
           </div>
