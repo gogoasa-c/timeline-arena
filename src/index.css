@@ -1,0 +1,16 @@
+/* Replaced by src/styles/globals.css — keep only #root override */
+#root {
+  width: 100%;
+  height: 100svh;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
