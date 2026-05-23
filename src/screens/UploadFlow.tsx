@@ -4,6 +4,13 @@ import type { MemoryType, Submission } from '../types';
 
 const MEMORY_TYPES: MemoryType[] = ['Match', 'Event', 'Athletics', 'Concert', 'Opening', 'Demolition', 'Other'];
 
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  return parts[0].slice(0, 2).toUpperCase();
+}
+
 type Step = 'photo' | 'form' | 'success';
 
 interface UploadFlowProps {
@@ -20,6 +27,7 @@ function UploadModal({ year, onClose, onSuccess, onSubmit }: UploadFlowProps) {
   const [memory, setMemory] = useState('');
   const [type, setType] = useState<MemoryType>('Match');
   const [memYear, setMemYear] = useState(String(year));
+  const [name, setName] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
   const progress = step === 'photo' ? 33 : step === 'form' ? 66 : 100;
@@ -33,14 +41,17 @@ function UploadModal({ year, onClose, onSuccess, onSubmit }: UploadFlowProps) {
   };
 
   const handleSubmit = () => {
+    const trimmedName = name.trim();
+    const author = trimmedName || 'Anonymous';
+    const authorInitials = getInitials(author);
     onSubmit({
       id: `user-${Date.now()}`,
       year: parseInt(memYear) || year,
       title,
       memory,
       type,
-      author: 'You',
-      authorInitials: 'YO',
+      author,
+      authorInitials,
       likes: 0,
       photo: photo ?? undefined,
     });
@@ -147,6 +158,8 @@ function UploadModal({ year, onClose, onSuccess, onSubmit }: UploadFlowProps) {
             setMemory={setMemory}
             type={type}
             setType={setType}
+            name={name}
+            setName={setName}
             onBack={() => setStep('photo')}
             onSubmit={handleSubmit}
           />
@@ -221,12 +234,14 @@ function FormStep({
   title, setTitle,
   memory, setMemory,
   type, setType,
+  name, setName,
   onBack, onSubmit,
 }: {
   memYear: string; setMemYear: (v: string) => void;
   title: string; setTitle: (v: string) => void;
   memory: string; setMemory: (v: string) => void;
   type: MemoryType; setType: (v: MemoryType) => void;
+  name: string; setName: (v: string) => void;
   onBack: () => void;
   onSubmit: () => void;
 }) {
@@ -261,6 +276,18 @@ function FormStep({
           placeholder="e.g. My first derby match, 1968"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          style={inputStyle}
+          onFocus={(e) => (e.target.style.borderColor = 'var(--accent-border)')}
+          onBlur={(e) => (e.target.style.borderColor = 'var(--border)')}
+        />
+      </FieldGroup>
+
+      <FieldGroup label="YOUR NAME">
+        <input
+          type="text"
+          placeholder="e.g. Ion Popescu  (leave blank for Anonymous)"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           style={inputStyle}
           onFocus={(e) => (e.target.style.borderColor = 'var(--accent-border)')}
           onBlur={(e) => (e.target.style.borderColor = 'var(--border)')}
