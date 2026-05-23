@@ -271,17 +271,26 @@ const RAW_SUBMISSIONS: Submission[] = [
   },
 ];
 
+// Prepends Vite's base URL so paths work on GitHub Pages subpaths like /timeline-arena/
+function withBase(path: string): string {
+  return `${import.meta.env.BASE_URL}${path}`;
+}
+
 export const SUBMISSIONS: Submission[] = RAW_SUBMISSIONS.map((s) => ({
   ...s,
-  photo: photoConfig.submissions[s.id] ?? s.photo,
+  photo: photoConfig.submissions[s.id]
+    ? withBase(photoConfig.submissions[s.id])
+    : s.photo,
 }));
 
 export function getEraPhoto(year: number): string | undefined {
-  return photoConfig.eras[year as keyof typeof photoConfig.eras];
+  const path = photoConfig.eras[year as keyof typeof photoConfig.eras];
+  return path ? withBase(path) : undefined;
 }
 
 export function getHotspotPhoto(hotspotId: string, period: string): string | undefined {
-  return photoConfig.hotspots[hotspotId]?.[period];
+  const path = photoConfig.hotspots[hotspotId]?.[period];
+  return path ? withBase(path) : undefined;
 }
 
 export function getEra(year: number): Era {
