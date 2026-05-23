@@ -2,6 +2,7 @@ import { memo, useMemo } from 'react';
 import { StadiumRing } from '../components/StadiumRing';
 import { getYearData, getEraPhoto, TIMELINE_YEARS } from '../data';
 import { ShareButton } from '../components/ShareButton';
+import { useIsDesktop } from '../hooks/useIsDesktop';
 import type { Screen } from '../types';
 
 interface HomeScreenProps {
@@ -17,6 +18,7 @@ export const HomeScreen = memo(function HomeScreen({
   onNavigate,
   onYearDetail,
 }: HomeScreenProps) {
+  const isDesktop = useIsDesktop();
   const data = useMemo(() => getYearData(year), [year]);
   const eraPhoto = useMemo(() => getEraPhoto(year), [year]);
 
@@ -124,6 +126,7 @@ export const HomeScreen = memo(function HomeScreen({
         setYear={setYear}
         onYearDetail={onYearDetail}
         pct={pct}
+        isDesktop={isDesktop}
       />
     </div>
   );
@@ -175,11 +178,13 @@ function TimelineScrubber({
   setYear,
   onYearDetail,
   pct,
+  isDesktop,
 }: {
   year: number;
   setYear: (y: number) => void;
   onYearDetail: () => void;
   pct: number;
+  isDesktop: boolean;
 }) {
   const minYear = TIMELINE_YEARS[0];
   const maxYear = TIMELINE_YEARS[TIMELINE_YEARS.length - 1];
@@ -192,9 +197,9 @@ function TimelineScrubber({
     <div style={{
       position: 'relative',
       zIndex: 1,
-      padding: '0 48px 28px',
+      padding: '16px 48px',
+      paddingBottom: isDesktop ? '28px' : 'calc(28px + var(--bottom-nav-height))',
       borderTop: '1px solid var(--border)',
-      paddingTop: '16px',
     }}>
       {/* Year labels */}
       <div style={{ position: 'relative', height: '18px', marginBottom: '10px' }}>

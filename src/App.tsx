@@ -5,7 +5,6 @@ import { readParams, writeParams } from './hooks/useUrlSync';
 import { TIMELINE_YEARS } from './data';
 import { Sidebar } from './components/Sidebar';
 import { BottomNav } from './components/BottomNav';
-import { StatusBar } from './components/StatusBar';
 import { HomeScreen } from './screens/HomeScreen';
 import { YearDetailScreen } from './screens/YearDetailScreen';
 import { ComparisonScreen } from './screens/ComparisonScreen';
@@ -92,7 +91,7 @@ export default function App() {
           background: 'var(--bg)',
         }}
       >
-        {!isDesktop && tweaks.showStatusBar && <StatusBar />}
+        {/* StatusBar intentionally removed — duplicates the real system bar on mobile */}
 
         <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
           {isDesktop && (

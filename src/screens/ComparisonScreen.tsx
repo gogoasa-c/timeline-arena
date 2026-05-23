@@ -2,6 +2,7 @@ import { memo, useState, useRef, useEffect } from 'react';
 import { ERAS, getEraPhoto } from '../data';
 import { readParams, writeParams } from '../hooks/useUrlSync';
 import { ShareButton } from '../components/ShareButton';
+import { useIsDesktop } from '../hooks/useIsDesktop';
 
 const ERA_YEARS = [
   { label: '1968', value: 1968 },
@@ -11,6 +12,7 @@ const ERA_YEARS = [
 ];
 
 export const ComparisonScreen = memo(function ComparisonScreen() {
+  const isDesktop = useIsDesktop();
   const initParams = readParams();
   const [leftYear, setLeftYear] = useState(Number(initParams.get('left') ?? 1968));
   const [rightYear, setRightYear] = useState(Number(initParams.get('right') ?? 2024));
@@ -149,6 +151,7 @@ export const ComparisonScreen = memo(function ComparisonScreen() {
       {/* Bottom timeline selectors */}
       <div style={{
         padding: '12px 24px',
+        paddingBottom: isDesktop ? '12px' : 'calc(12px + var(--bottom-nav-height))',
         borderTop: '1px solid var(--border)',
         display: 'flex',
         gap: '12px',
